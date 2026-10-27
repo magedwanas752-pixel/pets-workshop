@@ -2,21 +2,17 @@ services:
   - type: web
     name: private-memory-book
     runtime: docker
-    plan: starter
+    plan: free
     dockerfilePath: ./Dockerfile
     dockerContext: .
     healthCheckPath: /api/health
-    disk:
-      name: memory-book-data
-      mountPath: /var/data
-      sizeGB: 1
     envVars:
       - key: SECRET_KEY
         generateValue: true
       - key: MEMORY_DATABASE_PATH
-        value: /var/data/memory_book.db
+        value: /tmp/memory_book.db
       - key: MEMORY_UPLOAD_DIR
-        value: /var/data/uploads
+        value: /tmp/memory-book-uploads
       - key: API_SERVER_URL
         value: http://127.0.0.1:5100
       - key: SESSION_COOKIE_SECURE
@@ -24,6 +20,8 @@ services:
       - key: MIN_PASSWORD_LENGTH
         value: "12"
       - key: PUBLIC_DEPLOYMENT
+        value: "true"
+      - key: EPHEMERAL_STORAGE
         value: "true"
       - key: TRUST_PROXY
         value: "true"

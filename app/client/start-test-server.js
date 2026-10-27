@@ -22,6 +22,7 @@ const server = spawn(python, ["app.py"], {
     FLASK_PORT: "5100",
     MIN_PASSWORD_LENGTH: "12",
     PUBLIC_DEPLOYMENT: "true",
+    EPHEMERAL_STORAGE: "true",
   },
   stdio: "inherit",
 });

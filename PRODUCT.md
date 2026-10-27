@@ -27,8 +27,9 @@ cloud backup product.
 
 An Astro web client communicates with a Flask API. In local mode, the API stores
 a SQLite database, password hash, and uploaded images in the ignored
-`app/server/instance/` folder. The Render deployment uses a persistent disk for
-the database and images. No third-party analytics are used.
+`app/server/instance/` folder. The free Render deployment stores its database
+and images on ephemeral disk space; deploys and service restarts can erase them.
+No third-party analytics are used.
 
 ## Capabilities and Constraints
 

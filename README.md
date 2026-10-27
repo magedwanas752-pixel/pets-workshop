@@ -17,16 +17,17 @@ are stored in the ignored `app/server/instance/` folder.
 
 The repository includes a Render Blueprint and Dockerfile. To publish it, push
 the repository to GitHub, sign in to Render, choose **New → Blueprint**, connect
-this repository, and apply `render.yaml`. The service uses Render's paid Starter
-web-service plan and a 1 GB persistent disk; the disk is necessary so photos
-and memories survive deploys and restarts. Render shows the service's public
-`*.onrender.com` address when deployment finishes.
+this repository, and apply `render.yaml`. The service uses Render's free
+web-service plan, so there is no monthly service fee. Render shows the
+service's public `*.onrender.com` address when deployment finishes.
 
 Open that address yourself and create the owner password (at least 12
 characters). The local password `2715` is intentionally too short for the
 hosted version and is not copied to Render. Hosted memories and photos are
-stored on Render's persistent disk, not on your device, and are not automatically
-copied from the local database. Back up the Render disk separately.
+stored in the free service's temporary filesystem, not on your device, and are
+not copied from the local database. Render may erase them when the free service
+restarts, spins down, or deploys an update. Download and keep your own copies of
+any important photos and stories; this free setup is not permanent storage.
 
 To prepare a read-only gift, sign into the hosted book, add its memories and
 photos, then open **Prepare a gift to share** and set a separate password for
@@ -39,7 +40,8 @@ password-gated, and failed attempts are rate-limited.
 The public URL does not exist until the Blueprint has been applied in your
 Render account and its first deploy succeeds. Create the owner password, add
 the gift content, and create its separate gift password before sharing the gift
-link. The public URL and its data store are separate from the local preview.
+link. The public URL and its temporary data store are separate from the local
+preview.
 
 ## Tests
 

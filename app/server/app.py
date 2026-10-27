@@ -143,6 +143,7 @@ def auth_status():
         "csrf_token": _csrf_token(),
         "password_min_length": app.config["MIN_PASSWORD_LENGTH"],
         "public_deployment": os.environ.get("PUBLIC_DEPLOYMENT", "").lower() == "true",
+        "ephemeral_storage": os.environ.get("EPHEMERAL_STORAGE", "").lower() == "true",
     })
 
 

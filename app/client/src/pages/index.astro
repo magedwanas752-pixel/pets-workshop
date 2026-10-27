@@ -234,6 +234,7 @@ import Layout from "../layouts/Layout.astro";
     csrf_token: string;
     password_min_length: number;
     public_deployment: boolean;
+    ephemeral_storage: boolean;
   };
 
   const translations: Record<Language, Record<string, string>> = {
@@ -327,6 +328,7 @@ import Layout from "../layouts/Layout.astro";
       languageSwitch: "التبديل إلى الإنجليزية",
       storageLocal: "صورك وذكرياتك محفوظة على هذا الجهاز.",
       storagePublic: "صورك وذكرياتك محفوظة على الاستضافة التي يشغّل عليها الدفتر.",
+      storageEphemeral: "تنبيه: الصور والذكريات محفوظة على استضافة مجانية مؤقتة، وقد تُحذف عند إعادة تشغيل الخدمة أو نشر تحديث.",
       setupTitle: "أنشئي كلمة سر لدفترك",
       setupKicker: "خطوة أولى… وخصوصية لكِ",
       setupPasswordLabel: "كلمة السر الجديدة",
@@ -439,6 +441,7 @@ import Layout from "../layouts/Layout.astro";
       languageSwitch: "Switch language to Arabic",
       storageLocal: "Your photos and memories are stored on this device.",
       storagePublic: "Your photos and memories are stored on the hosting service running this book.",
+      storageEphemeral: "Note: photos and memories are on temporary free hosting and may be erased when the service restarts or a new version is deployed.",
       setupTitle: "Create a password for your book",
       setupKicker: "A first step… and your privacy",
       setupPasswordLabel: "New password",
@@ -525,7 +528,7 @@ import Layout from "../layouts/Layout.astro";
       if (storageFooter) storageFooter.textContent = t("giftFooter");
     }
     if (currentBookStatus) {
-      updateStorageCopy(currentBookStatus.public_deployment);
+      updateStorageCopy(currentBookStatus.public_deployment, currentBookStatus.ephemeral_storage);
       const localWarning = document.querySelector<HTMLElement>("#gift-local-warning");
       const giftLink = document.querySelector<HTMLElement>("#gift-share-link");
       if (localWarning) localWarning.hidden = currentBookStatus.public_deployment;
@@ -642,8 +645,10 @@ import Layout from "../layouts/Layout.astro";
     showMessage(accessMessage, "");
   }
 
-  function updateStorageCopy(publicDeployment: boolean) {
-    const storageMessage = t(publicDeployment ? "storagePublic" : "storageLocal");
+  function updateStorageCopy(publicDeployment: boolean, ephemeralStorage = false) {
+    const storageMessage = t(
+      publicDeployment ? (ephemeralStorage ? "storageEphemeral" : "storagePublic") : "storageLocal",
+    );
     const privacyNote = document.querySelector<HTMLElement>("#privacy-note-text");
     const storageFooter = document.querySelector<HTMLElement>("#storage-footer");
     if (privacyNote) privacyNote.textContent = storageMessage;
@@ -660,7 +665,7 @@ import Layout from "../layouts/Layout.astro";
     csrfToken.value = status.csrf_token;
     const newPasswordInput = document.querySelector<HTMLInputElement>("#new-password");
     const newPasswordConfirmation = document.querySelector<HTMLInputElement>("#new-password-confirmation");
-    updateStorageCopy(status.public_deployment);
+    updateStorageCopy(status.public_deployment, status.ephemeral_storage);
     if (newPasswordInput) newPasswordInput.minLength = status.password_min_length;
     if (newPasswordConfirmation) newPasswordConfirmation.minLength = status.password_min_length;
     const giftPassword = document.querySelector<HTMLInputElement>("#gift-share-password");

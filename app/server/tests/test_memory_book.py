@@ -161,6 +161,11 @@ class MemoryBookApiTests(unittest.TestCase):
         status = self.client.get("/api/auth/status").get_json()
         self.assertEqual(status["password_min_length"], 12)
         self.assertTrue(status["public_deployment"] is False)
+        os.environ["PUBLIC_DEPLOYMENT"] = "true"
+        os.environ["EPHEMERAL_STORAGE"] = "true"
+        status = self.client.get("/api/auth/status").get_json()
+        self.assertTrue(status["public_deployment"])
+        self.assertTrue(status["ephemeral_storage"])
 
     def test_gift_password_grants_read_only_memory_and_photo_access(self):
         created = self.client.post(

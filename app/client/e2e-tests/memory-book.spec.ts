@@ -9,7 +9,11 @@ test.describe("دفتر الذكريات الخاص", () => {
       const status = await response.json();
       await route.fulfill({
         response,
-        json: { ...status, public_deployment: !localPreview },
+        json: {
+          ...status,
+          public_deployment: !localPreview,
+          ephemeral_storage: !localPreview,
+        },
       });
     });
     await page.goto("/");
@@ -63,6 +67,7 @@ test.describe("دفتر الذكريات الخاص", () => {
     await expect(page.locator("#gift-share-link")).toBeHidden();
     localPreview = false;
     await page.reload();
+    await expect(page.locator("#storage-footer")).toContainText("استضافة مجانية مؤقتة");
     await page.getByText("تجهيز هدية للمشاركة").click();
     await expect(page.locator("#gift-share-link")).toBeVisible();
     await expect(page.locator("#gift-url")).toHaveValue(/gift=1/);
