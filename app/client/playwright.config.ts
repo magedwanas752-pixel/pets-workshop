@@ -3,8 +3,6 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const serverDir = path.resolve(__dirname, '..', 'server');
-const testDbPath = path.join(serverDir, 'e2e_test_dogshelter.db');
 const flaskPort = 5100;
 const astroDevPort = 4321;
 
@@ -28,12 +26,12 @@ export default defineConfig({
   webServer: [
     {
       command: `node start-test-server.js`,
-      url: `http://localhost:${flaskPort}/api/dogs`,
+      url: `http://localhost:${flaskPort}/api/auth/status`,
       reuseExistingServer: false,
       timeout: 30_000,
     },
     {
-      command: `npx cross-env API_SERVER_URL=http://localhost:${flaskPort} npm run dev -- --no-clearScreen`,
+      command: `npx cross-env API_SERVER_URL=http://127.0.0.1:${flaskPort} npm run dev -- --no-clearScreen`,
       url: `http://localhost:${astroDevPort}`,
       reuseExistingServer: !process.env.CI,
       timeout: 30_000,

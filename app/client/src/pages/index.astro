@@ -1,83 +1,1862 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import DogList from '../components/DogList.astro';
-
-const API_SERVER_URL = process.env.API_SERVER_URL || 'http://localhost:5100';
-const PAGE_SIZE = 6;
-
-let dogs = [];
-let page = 1;
-let totalPages = 1;
-let error: string | null = null;
-
-const currentPage = Math.max(1, Number(Astro.url.searchParams.get('page')) || 1);
-
-try {
-  const response = await fetch(`${API_SERVER_URL}/api/dogs?page=${currentPage}&per_page=${PAGE_SIZE}`);
-  if (response.ok) {
-    const data = await response.json();
-    dogs = data.dogs;
-    page = data.page;
-    totalPages = data.total_pages;
-  } else {
-    error = `Failed to fetch data: ${response.status} ${response.statusText}`;
-  }
-} catch (err) {
-  error = `Error: ${err instanceof Error ? err.message : String(err)}`;
-}
+import Layout from "../layouts/Layout.astro";
 ---
 
-<Layout title="Tailspin Shelter - Find Your Forever Friend">
-  <div class="py-8">
-    <div class="max-w-3xl mb-10">
-      <h1 class="text-4xl font-bold mb-4 text-slate-100">Welcome to Tailspin Shelter</h1>
-      <p class="text-xl text-slate-300">Find your perfect companion from our wonderful selection of dogs looking for their forever homes.</p>
+<Layout title="دفتر الذكريات | رسائل وصور لا تُنسى">
+  <section class="access-screen page-shell" id="access-screen" aria-labelledby="access-heading">
+    <div class="welcome-copy">
+      <span class="eyebrow"><span aria-hidden="true">✿</span> <span data-i18n="welcomeEyebrow">مكان صغير لأجمل حكاياتك</span></span>
+      <h1 id="access-heading" data-i18n="welcomeTitle">كل ذكرى تستحقّ أن تُحفظ</h1>
+      <p data-i18n="welcomeDescription">صورك، حكاياتك، والتفاصيل الصغيرة التي تحبين أن تعودي إليها… كلها هنا، في دفتر لا يفتحه سواك.</p>
     </div>
 
-    {error ? (
-      <div class="text-center py-12 bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700" data-testid="error-message">
-        <p class="text-red-400">{error}</p>
+    <div class="gate-grid">
+      <div class="envelope-scene" aria-hidden="true">
+        <div class="pressed-flower flower-one">✿</div>
+        <div class="pressed-flower flower-two">✿</div>
+        <div class="envelope-shadow"></div>
+        <div class="envelope">
+          <div class="envelope-letter">
+            <span data-i18n="envelopeLetter">إلى صاحبة هذه الذكريات</span>
+            <span class="letter-mark">✦</span>
+          </div>
+          <div class="envelope-flap"></div>
+          <div class="envelope-front"></div>
+          <div class="envelope-seal">✿</div>
+        </div>
+        <p class="envelope-caption" data-i18n="envelopeCaption">على مهلٍ… هذه الحكايات لكِ</p>
       </div>
-    ) : (
-      <>
-        <DogList dogs={dogs} />
 
-        {totalPages > 1 && (
-          <nav class="flex justify-center items-center gap-2 mt-10" data-testid="pagination">
-            {page > 1 ? (
-              <a
-                href={`/?page=${page - 1}`}
-                class="px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:border-blue-500/50 hover:text-blue-400 transition-colors"
-                data-testid="pagination-prev"
-              >
-                ← Previous
-              </a>
-            ) : (
-              <span class="px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-600 cursor-not-allowed">
-                ← Previous
-              </span>
-            )}
+      <div class="access-paper">
+        <span class="paper-corner" aria-hidden="true">✧</span>
+        <span class="access-kicker" id="access-kicker">دفترك ينتظرك</span>
+        <h2 id="access-title">افتحي دفتر الذكريات</h2>
+        <p class="access-description" id="access-description">أدخلي كلمة السر لتعودي إلى حكاياتك وصورك.</p>
 
-            <span class="px-4 py-2 text-slate-300" data-testid="pagination-info">
-              Page {page} of {totalPages}
-            </span>
+        <form class="password-form" id="password-form">
+          <label for="password" id="password-label">كلمة السر</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            minlength="4"
+            maxlength="128"
+            required
+            dir="ltr"
+          />
+          <div class="confirmation-field" id="confirmation-field" hidden>
+            <label for="confirmation" data-i18n="passwordConfirmation">أكّدي كلمة السر</label>
+            <input
+              id="confirmation"
+              name="confirmation"
+              type="password"
+              autocomplete="new-password"
+              minlength="4"
+              maxlength="128"
+              dir="ltr"
+            />
+          </div>
+          <button class="primary-button" id="access-button" type="submit">
+            <span id="access-button-label">فتح الدفتر</span>
+            <span aria-hidden="true">←</span>
+          </button>
+          <p class="form-message" id="access-message" role="status" aria-live="polite"></p>
+        </form>
 
-            {page < totalPages ? (
-              <a
-                href={`/?page=${page + 1}`}
-                class="px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:border-blue-500/50 hover:text-blue-400 transition-colors"
-                data-testid="pagination-next"
-              >
-                Next →
-              </a>
-            ) : (
-              <span class="px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-600 cursor-not-allowed">
-                Next →
-              </span>
-            )}
-          </nav>
-        )}
-      </>
-    )}
-  </div>
+        <p class="privacy-note"><span aria-hidden="true">♧</span> <span id="privacy-note-text"></span></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="gift-view page-shell" id="gift-view" aria-labelledby="gift-heading" hidden>
+    <div class="gift-welcome">
+      <span class="eyebrow"><span aria-hidden="true">✿</span> <span data-i18n="giftEyebrow">هدية من القلب</span></span>
+      <h1 id="gift-heading" data-i18n="giftTitle">أعددتُ لك هذه الذكريات</h1>
+      <p data-i18n="giftDescription">لحظات جميلة جمعتها لكِ في مكان واحد، أتمنى أن تعجبك.</p>
+    </div>
+    <div class="gift-access access-paper" id="gift-access">
+      <span class="access-kicker" data-i18n="giftAccessKicker">رسالة خاصة</span>
+      <h2 data-i18n="giftAccessTitle">افتحي هديتك</h2>
+      <p data-i18n="giftAccessDescription">أدخلي كلمة السر التي وصلتك مع الرابط.</p>
+      <form class="password-form" id="gift-password-form">
+        <label for="gift-password" data-i18n="giftPasswordLabel">كلمة السر</label>
+        <input id="gift-password" name="password" type="password" autocomplete="current-password" maxlength="128" required dir="ltr" />
+        <button class="primary-button" type="submit"><span data-i18n="giftOpenButton">افتحي الهدية</span><span aria-hidden="true">←</span></button>
+        <p class="form-message" id="gift-message" role="status" aria-live="polite"></p>
+      </form>
+      <p class="gift-not-ready" id="gift-not-ready" hidden data-i18n="giftNotReady">هذه الهدية لم تُجهّز للمشاركة بعد.</p>
+    </div>
+    <div class="gift-content" id="gift-content" hidden>
+      <div class="memories-heading">
+        <div>
+          <span class="access-kicker" data-i18n="giftPages">صفحات أُعدّت لك</span>
+          <h2 data-i18n="giftMemoriesTitle">ذكرياتك</h2>
+        </div>
+        <span class="memory-count" id="gift-memory-count"></span>
+      </div>
+      <div class="memories-grid" id="gift-memories-grid" aria-live="polite"></div>
+      <div class="empty-state" id="gift-empty-state" hidden>
+        <span aria-hidden="true">✿</span>
+        <h3 data-i18n="giftEmptyTitle">تنتظرك هنا أول ذكرى</h3>
+        <p data-i18n="giftEmptyDescription">ستظهر هنا الصور والحكايات التي أُعدّت لك.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="memory-book page-shell" id="memory-book" aria-labelledby="book-heading" hidden>
+    <div class="book-heading">
+      <div>
+        <span class="eyebrow"><span aria-hidden="true">✿</span> <span data-i18n="bookEyebrow">أهلًا بعودتكِ</span></span>
+        <h1 id="book-heading" data-i18n="bookHeading">مساحة لأيامك الجميلة</h1>
+        <p data-i18n="bookDescription">اكتبي اللحظة كما تتذكرينها، وأرفقي الصورة التي تعيدك إليها.</p>
+      </div>
+      <button class="quiet-button" id="logout-button" type="button"><span data-i18n="logout">إغلاق الدفتر</span> <span aria-hidden="true">↗</span></button>
+    </div>
+
+    <div class="book-layout">
+      <aside class="composer-paper" aria-labelledby="composer-heading">
+        <span class="section-mark" aria-hidden="true">✦</span>
+        <span class="access-kicker" data-i18n="composerKicker">لحظة تستحق الحفظ</span>
+        <h2 id="composer-heading" data-i18n="composerHeading">أضيفي ذكرى</h2>
+        <p class="composer-intro" data-i18n="composerIntro">حتى التفاصيل الصغيرة تكبر قيمتها حين ندوّنها.</p>
+
+        <form class="memory-form" id="memory-form">
+          <label for="memory-title" data-i18n="memoryTitleLabel">عنوان الذكرى</label>
+          <input id="memory-title" name="title" type="text" maxlength="160" placeholder="يوم لا أنساه…" data-i18n-placeholder="memoryTitlePlaceholder" required />
+
+          <label for="memory-story" data-i18n="memoryStoryLabel">حكاية الذكرى</label>
+          <textarea id="memory-story" name="story" rows="5" maxlength="10000" placeholder="أين كنتِ؟ من كان معكِ؟ ما التفصيل الذي بقي في بالك؟" data-i18n-placeholder="memoryStoryPlaceholder" required></textarea>
+
+          <label for="memory-date"><span data-i18n="memoryDateLabel">تاريخها</span> <span class="optional-label" data-i18n="optional">اختياري</span></label>
+          <input id="memory-date" name="happened_on" type="date" />
+
+          <label class="photo-picker" for="memory-photos">
+            <span class="photo-icon" aria-hidden="true">＋</span>
+            <span class="photo-picker-copy"><strong data-i18n="addPhotos">أرفقي صورًا</strong><small data-i18n="photoHelp">JPG أو PNG أو WEBP أو GIF · حتى 8 صور</small></span>
+            <input id="memory-photos" name="photos" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple />
+          </label>
+          <div class="photo-preview" id="photo-preview" aria-live="polite"></div>
+
+          <button class="primary-button save-button" id="save-button" type="submit">
+            <span data-i18n="saveMemory">حفظ الذكرى</span><span aria-hidden="true">✧</span>
+          </button>
+          <p class="form-message" id="memory-message" role="status" aria-live="polite"></p>
+        </form>
+      </aside>
+
+      <section class="memories-section" aria-labelledby="memories-heading">
+        <div class="memories-heading">
+          <div>
+            <span class="access-kicker" data-i18n="savedPages">صفحاتك المحفوظة</span>
+            <h2 id="memories-heading" data-i18n="memoriesTitle">ذكرياتك</h2>
+          </div>
+          <span class="memory-count" id="memory-count">٠ ذكريات</span>
+        </div>
+        <div class="memories-grid" id="memories-grid" aria-live="polite"></div>
+        <div class="empty-state" id="empty-state">
+          <span aria-hidden="true">✿</span>
+          <h3 data-i18n="emptyTitle">هذه الصفحة ما زالت تنتظر حكايتها الأولى</h3>
+          <p data-i18n="emptyDescription">ابدئي بذكرى واحدة؛ صورة، موعد، أو حكاية صغيرة تحبين الاحتفاظ بها.</p>
+          <a href="#composer-heading"><span data-i18n="emptyAction">أضيفي أول ذكرى</span> <span aria-hidden="true">↑</span></a>
+        </div>
+      </section>
+    </div>
+
+    <details class="password-settings">
+      <summary data-i18n="passwordSettingsTitle">تغيير كلمة السر</summary>
+      <form class="change-password-form" id="change-password-form">
+        <label for="current-password" data-i18n="currentPassword">كلمة السر الحالية</label>
+        <input id="current-password" name="current" type="password" autocomplete="current-password" required dir="ltr" />
+        <label for="new-password" data-i18n="newPassword">كلمة السر الجديدة</label>
+        <input id="new-password" name="password" type="password" minlength="4" maxlength="128" autocomplete="new-password" required dir="ltr" />
+        <label for="new-password-confirmation" data-i18n="newPasswordConfirmation">أكّدي كلمة السر الجديدة</label>
+        <input id="new-password-confirmation" name="confirmation" type="password" minlength="4" maxlength="128" autocomplete="new-password" required dir="ltr" />
+        <button class="secondary-button" type="submit" data-i18n="savePassword">حفظ كلمة السر الجديدة</button>
+        <p class="form-message" id="password-message" role="status" aria-live="polite"></p>
+      </form>
+    </details>
+
+    <details class="gift-settings" id="gift-settings">
+      <summary data-i18n="giftSettingsTitle">تجهيز هدية للمشاركة</summary>
+      <p data-i18n="giftSettingsDescription">أنشئي كلمة سر خاصة بالمستلم. سيتمكن من مشاهدة الصور والذكريات فقط، دون تعديلها.</p>
+      <form class="change-password-form" id="gift-settings-form">
+        <label for="gift-share-password" data-i18n="giftSharePassword">كلمة سر الهدية</label>
+        <input id="gift-share-password" name="password" type="password" minlength="4" maxlength="128" autocomplete="new-password" required dir="ltr" />
+        <label for="gift-share-confirmation" data-i18n="giftShareConfirmation">أكّدي كلمة سر الهدية</label>
+        <input id="gift-share-confirmation" name="confirmation" type="password" minlength="4" maxlength="128" autocomplete="new-password" required dir="ltr" />
+        <button class="secondary-button" type="submit" data-i18n="createGiftLink">إنشاء رابط الهدية</button>
+        <p class="form-message" id="gift-settings-message" role="status" aria-live="polite"></p>
+        <p class="gift-local-warning" id="gift-local-warning" hidden data-i18n="giftLocalWarning">الموقع يعمل الآن على جهازك فقط؛ الرابط المحلي لا يفتح عند المستلم. انشري الموقع على Render أولًا، ثم افتحيه هناك وأنشئي رابط الهدية من النسخة المنشورة.</p>
+        <div class="gift-share-link" id="gift-share-link" hidden>
+          <label for="gift-url" data-i18n="giftLinkLabel">رابط الهدية</label>
+          <input id="gift-url" type="url" readonly dir="ltr" />
+          <button class="secondary-button" id="copy-gift-link" type="button" data-i18n="copyGiftLink">نسخ الرابط</button>
+          <p data-i18n="giftShareReminder">أرسلي الرابط وكلمة سر الهدية للمستلم. احتفظي بكلمة السر بأمان.</p>
+        </div>
+      </form>
+    </details>
+  </section>
+
+  <template id="memory-template">
+    <article class="memory-card">
+      <div class="memory-photos"></div>
+      <div class="memory-copy">
+        <div class="memory-meta">
+          <time class="memory-date"></time>
+          <button class="delete-memory" type="button" aria-label="حذف هذه الذكرى" data-i18n-aria-label="deleteMemory" data-i18n="delete">حذف</button>
+        </div>
+        <h3 class="memory-title"></h3>
+        <p class="memory-story"></p>
+        <span class="photo-count"></span>
+      </div>
+    </article>
+  </template>
 </Layout>
+
+<script>
+  type ApiOptions = {
+    method?: string;
+    body?: BodyInit | null;
+    headers?: HeadersInit;
+  };
+  type Language = "ar" | "en";
+  type Memory = {
+    id: number;
+    title: string;
+    story: string;
+    happened_on: string | null;
+    photos: Array<{ id: number; url: string }>;
+  };
+  type BookStatus = {
+    configured: boolean;
+    authenticated: boolean;
+    csrf_token: string;
+    password_min_length: number;
+    public_deployment: boolean;
+  };
+
+  const translations: Record<Language, Record<string, string>> = {
+    ar: {
+      brand: "دفتر الذكريات",
+      privacyLabel: "مساحة خاصة",
+      giftPrivacyLabel: "هدية خاصة",
+      giftFooter: "أُعدّت لك بكل حب",
+      welcomeEyebrow: "مكان صغير لأجمل حكاياتك",
+      welcomeTitle: "كل ذكرى تستحقّ أن تُحفظ",
+      welcomeDescription: "صورك، حكاياتك، والتفاصيل الصغيرة التي تحبين أن تعودي إليها… كلها هنا، في دفتر لا يفتحه سواك.",
+      envelopeLetter: "إلى صاحبة هذه الذكريات",
+      envelopeCaption: "على مهلٍ… هذه الحكايات لكِ",
+      passwordConfirmation: "أكّدي كلمة السر",
+      giftEyebrow: "هدية من القلب",
+      giftTitle: "أعددتُ لك هذه الذكريات",
+      giftDescription: "لحظات جميلة جمعتها لكِ في مكان واحد، أتمنى أن تعجبك.",
+      giftAccessKicker: "رسالة خاصة",
+      giftAccessTitle: "افتحي هديتك",
+      giftAccessDescription: "أدخلي كلمة السر التي وصلتك مع الرابط.",
+      giftPasswordLabel: "كلمة السر",
+      giftOpenButton: "افتحي الهدية",
+      giftNotReady: "هذه الهدية لم تُجهّز للمشاركة بعد.",
+      giftPages: "صفحات أُعدّت لك",
+      giftMemoriesTitle: "ذكرياتك",
+      giftEmptyTitle: "تنتظرك هنا أول ذكرى",
+      giftEmptyDescription: "ستظهر هنا الصور والحكايات التي أُعدّت لك.",
+      bookEyebrow: "أهلًا بعودتكِ",
+      bookHeading: "مساحة لأيامك الجميلة",
+      bookDescription: "اكتبي اللحظة كما تتذكرينها، وأرفقي الصورة التي تعيدك إليها.",
+      logout: "إغلاق الدفتر",
+      composerKicker: "لحظة تستحق الحفظ",
+      composerHeading: "أضيفي ذكرى",
+      composerIntro: "حتى التفاصيل الصغيرة تكبر قيمتها حين ندوّنها.",
+      memoryTitleLabel: "عنوان الذكرى",
+      memoryTitlePlaceholder: "يوم لا أنساه…",
+      memoryStoryLabel: "حكاية الذكرى",
+      memoryStoryPlaceholder: "أين كنتِ؟ من كان معكِ؟ ما التفصيل الذي بقي في بالك؟",
+      memoryDateLabel: "تاريخها",
+      optional: "اختياري",
+      addPhotos: "أرفقي صورًا",
+      photoHelp: "JPG أو PNG أو WEBP أو GIF · حتى 8 صور",
+      saveMemory: "حفظ الذكرى",
+      savedPages: "صفحاتك المحفوظة",
+      memoriesTitle: "ذكرياتك",
+      emptyTitle: "هذه الصفحة ما زالت تنتظر حكايتها الأولى",
+      emptyDescription: "ابدئي بذكرى واحدة؛ صورة، موعد، أو حكاية صغيرة تحبين الاحتفاظ بها.",
+      emptyAction: "أضيفي أول ذكرى",
+      passwordSettingsTitle: "تغيير كلمة السر",
+      currentPassword: "كلمة السر الحالية",
+      newPassword: "كلمة السر الجديدة",
+      newPasswordConfirmation: "أكّدي كلمة السر الجديدة",
+      savePassword: "حفظ كلمة السر الجديدة",
+      giftSettingsTitle: "تجهيز هدية للمشاركة",
+      giftSettingsDescription: "أنشئي كلمة سر خاصة بالمستلم. سيتمكن من مشاهدة الصور والذكريات فقط، دون تعديلها.",
+      giftSharePassword: "كلمة سر الهدية",
+      giftShareConfirmation: "أكّدي كلمة سر الهدية",
+      createGiftLink: "إنشاء رابط الهدية",
+      giftLinkLabel: "رابط الهدية",
+      giftShareReminder: "أرسلي الرابط وكلمة سر الهدية للمستلم. احتفظي بكلمة السر بأمان.",
+      copyGiftLink: "نسخ الرابط",
+      giftLocalWarning: "الموقع يعمل الآن على جهازك فقط؛ الرابط المحلي لا يفتح عند المستلم. انشري الموقع على Render أولًا، ثم افتحيه هناك وأنشئي رابط الهدية من النسخة المنشورة.",
+      giftSavedLocally: "تم حفظ كلمة سر الهدية، لكن الرابط لا يعمل إلا على جهازك. انشري الموقع على Render ثم أنشئي الرابط من النسخة المنشورة.",
+      deleteMemory: "حذف هذه الذكرى",
+      delete: "حذف",
+      giftEmptyCount: "٠ ذكريات",
+      memoryWithoutDate: "ذكرى بلا تاريخ",
+      writtenMemory: "ذكرى مكتوبة",
+      deleteConfirmation: "هل تريدين حذف هذه الذكرى وصورها نهائيًا؟",
+      passwordMismatch: "كلمتا السر غير متطابقتين.",
+      newPasswordMismatch: "كلمتا السر الجديدتان غير متطابقتين.",
+      savingPassword: "نحفظ مفتاح الدفتر…",
+      openingPages: "نفتح صفحاتك…",
+      arrangingMemory: "نرتّب صفحات الذكرى…",
+      memorySaved: "حُفظت الذكرى بين صفحاتك.",
+      passwordChanged: "تم تغيير كلمة السر.",
+      giftLinkCreated: "أصبح رابط الهدية جاهزًا. أرسلي الرابط وكلمة السر للمستلم.",
+      giftLinkCopied: "تم نسخ رابط الهدية.",
+      giftLinkCopyError: "تعذّر نسخ الرابط تلقائيًا. حدديه وانسخيه يدويًا.",
+      connectionError: "تعذّر الاتصال بالدفتر. تأكدي من تشغيل المشروع ثم حاولي مجددًا.",
+      unexpectedError: "حدث خطأ غير متوقع. حاولي مرة أخرى.",
+      loadError: "تعذّر تحميل دفتر الذكريات.",
+      memoriesLoadError: "تعذّر تحميل الذكريات.",
+      openError: "تعذّر فتح الدفتر.",
+      deleteError: "تعذّر حذف الذكرى.",
+      closeError: "تعذّر إغلاق الدفتر.",
+      saveError: "تعذّر حفظ الذكرى.",
+      passwordChangeError: "تعذّر تغيير كلمة السر.",
+      giftError: "تعذّر فتح الهدية.",
+      maxPhotos: "اختاري 8 صور كحد أقصى.",
+      languageSwitch: "التبديل إلى الإنجليزية",
+      storageLocal: "صورك وذكرياتك محفوظة على هذا الجهاز.",
+      storagePublic: "صورك وذكرياتك محفوظة على الاستضافة التي يشغّل عليها الدفتر.",
+      setupTitle: "أنشئي كلمة سر لدفترك",
+      setupKicker: "خطوة أولى… وخصوصية لكِ",
+      setupPasswordLabel: "كلمة السر الجديدة",
+      setupButton: "إنشاء الدفتر",
+      loginTitle: "افتحي دفتر الذكريات",
+      loginKicker: "دفترك ينتظرك",
+      loginDescription: "أدخلي كلمة السر لتعودي إلى حكاياتك وصورك.",
+      loginPasswordLabel: "كلمة السر",
+      loginButton: "فتح الدفتر",
+      setupDescription: "اختاري كلمة سر لا تقل عن {count} خانات. ستحتاجينها كل مرة تفتحين فيها هذا الدفتر.",
+      photoCount: "{count} صور",
+      photoCountOne: "صورة واحدة",
+      photoCountTwo: "صورتان",
+      memoryCount: "{count} ذكريات",
+      memoryCountOne: "ذكرى واحدة",
+      memoryCountTwo: "ذكريتان",
+      imageAlt: "صورة من ذكرى {title}",
+      setupMismatch: "كلمتا السر غير متطابقتين.",
+      giftPasswordMismatch: "كلمتا سر الهدية غير متطابقتين.",
+      giftLoginStatus: "أدخلي كلمة السر التي وصلتك مع الرابط.",
+      footerLove: "بكل حب",
+    },
+    en: {
+      brand: "Memory Book",
+      privacyLabel: "Private space",
+      giftPrivacyLabel: "A private gift",
+      giftFooter: "Prepared for you with love",
+      welcomeEyebrow: "A little place for your favorite stories",
+      welcomeTitle: "Every memory deserves to be kept",
+      welcomeDescription: "Your photos, stories, and little details to return to… all kept here in a book only you can open.",
+      envelopeLetter: "To the keeper of these memories",
+      envelopeCaption: "Take your time… these stories are yours",
+      passwordConfirmation: "Confirm password",
+      giftEyebrow: "A gift from the heart",
+      giftTitle: "I gathered these memories for you",
+      giftDescription: "A collection of lovely moments, just for you. I hope you enjoy it.",
+      giftAccessKicker: "A private note",
+      giftAccessTitle: "Open your gift",
+      giftAccessDescription: "Enter the password that came with your link.",
+      giftPasswordLabel: "Password",
+      giftOpenButton: "Open the gift",
+      giftNotReady: "This gift has not been prepared for sharing yet.",
+      giftPages: "Pages prepared for you",
+      giftMemoriesTitle: "Your memories",
+      giftEmptyTitle: "Your first memory is waiting here",
+      giftEmptyDescription: "The photos and stories prepared for you will appear here.",
+      bookEyebrow: "Welcome back",
+      bookHeading: "A place for your beautiful days",
+      bookDescription: "Write the moment as you remember it, and add the photo that takes you back.",
+      logout: "Close the book",
+      composerKicker: "A moment worth keeping",
+      composerHeading: "Add a memory",
+      composerIntro: "Even the smallest details grow more precious when written down.",
+      memoryTitleLabel: "Memory title",
+      memoryTitlePlaceholder: "A day I will never forget…",
+      memoryStoryLabel: "Your story",
+      memoryStoryPlaceholder: "Where were you? Who was with you? What detail stayed with you?",
+      memoryDateLabel: "Date",
+      optional: "Optional",
+      addPhotos: "Add photos",
+      photoHelp: "JPG, PNG, WEBP, or GIF · up to 8 photos",
+      saveMemory: "Save memory",
+      savedPages: "Your saved pages",
+      memoriesTitle: "Your memories",
+      emptyTitle: "This page is waiting for its first story",
+      emptyDescription: "Start with one memory: a photo, a date, or a little story you want to keep.",
+      emptyAction: "Add your first memory",
+      passwordSettingsTitle: "Change password",
+      currentPassword: "Current password",
+      newPassword: "New password",
+      newPasswordConfirmation: "Confirm new password",
+      savePassword: "Save new password",
+      giftSettingsTitle: "Prepare a gift to share",
+      giftSettingsDescription: "Create a password for the recipient. They can view the photos and memories, but cannot change them.",
+      giftSharePassword: "Gift password",
+      giftShareConfirmation: "Confirm gift password",
+      createGiftLink: "Create gift link",
+      giftLinkLabel: "Gift link",
+      giftShareReminder: "Send the link and gift password to the recipient. Keep the password safe.",
+      copyGiftLink: "Copy gift link",
+      giftLocalWarning: "This site is running only on your device, so a local link will not open for the recipient. Publish it on Render first, then open the live site and create the gift link there.",
+      giftSavedLocally: "The gift password is saved, but this link only works on your device. Publish on Render, then create the link from the live site.",
+      deleteMemory: "Delete this memory",
+      delete: "Delete",
+      giftEmptyCount: "0 memories",
+      memoryWithoutDate: "Memory with no date",
+      writtenMemory: "Written memory",
+      deleteConfirmation: "Permanently delete this memory and its photos?",
+      passwordMismatch: "The passwords do not match.",
+      newPasswordMismatch: "The new passwords do not match.",
+      savingPassword: "Saving your book key…",
+      openingPages: "Opening your pages…",
+      arrangingMemory: "Preparing your memory page…",
+      memorySaved: "Your memory is saved in the book.",
+      passwordChanged: "Password changed.",
+      giftLinkCreated: "Your gift link is ready. Send the link and password to the recipient.",
+      giftLinkCopied: "Gift link copied.",
+      giftLinkCopyError: "Could not copy the link automatically. Select and copy it manually.",
+      connectionError: "Could not connect to the book. Check that the project is running, then try again.",
+      unexpectedError: "Something went wrong. Please try again.",
+      loadError: "Could not load the memory book.",
+      memoriesLoadError: "Could not load your memories.",
+      openError: "Could not open the book.",
+      deleteError: "Could not delete the memory.",
+      closeError: "Could not close the book.",
+      saveError: "Could not save the memory.",
+      passwordChangeError: "Could not change the password.",
+      giftError: "Could not open the gift.",
+      maxPhotos: "Choose no more than 8 photos.",
+      languageSwitch: "Switch language to Arabic",
+      storageLocal: "Your photos and memories are stored on this device.",
+      storagePublic: "Your photos and memories are stored on the hosting service running this book.",
+      setupTitle: "Create a password for your book",
+      setupKicker: "A first step… and your privacy",
+      setupPasswordLabel: "New password",
+      setupButton: "Create the book",
+      loginTitle: "Open your memory book",
+      loginKicker: "Your book is waiting",
+      loginDescription: "Enter your password to return to your stories and photos.",
+      loginPasswordLabel: "Password",
+      loginButton: "Open the book",
+      setupDescription: "Choose a password with at least {count} characters. You will need it each time you open this book.",
+      photoCount: "{count} photos",
+      photoCountOne: "1 photo",
+      photoCountTwo: "2 photos",
+      memoryCount: "{count} memories",
+      memoryCountOne: "1 memory",
+      memoryCountTwo: "2 memories",
+      imageAlt: "Photo from the memory {title}",
+      setupMismatch: "The passwords do not match.",
+      giftPasswordMismatch: "The gift passwords do not match.",
+      giftLoginStatus: "Enter the password that came with your link.",
+      footerLove: "Made with love",
+    },
+  };
+
+  const accessScreen = document.querySelector<HTMLElement>("#access-screen");
+  const memoryBook = document.querySelector<HTMLElement>("#memory-book");
+  const giftView = document.querySelector<HTMLElement>("#gift-view");
+  const accessForm = document.querySelector<HTMLFormElement>("#password-form");
+  const memoryForm = document.querySelector<HTMLFormElement>("#memory-form");
+  const giftPasswordForm = document.querySelector<HTMLFormElement>("#gift-password-form");
+  const giftSettingsForm = document.querySelector<HTMLFormElement>("#gift-settings-form");
+  const accessMessage = document.querySelector<HTMLElement>("#access-message");
+  const memoryMessage = document.querySelector<HTMLElement>("#memory-message");
+  const accessButton = document.querySelector<HTMLButtonElement>("#access-button");
+  const giftMessage = document.querySelector<HTMLElement>("#gift-message");
+  const csrfToken = { value: "" };
+  const isGiftPage = new URLSearchParams(window.location.search).get("gift") === "1";
+  let currentLanguage: Language = localStorage.getItem("memory-book-language") === "en" ? "en" : "ar";
+  let currentBookStatus: BookStatus | null = null;
+  let giftAuthenticated = false;
+  let giftEnabled = false;
+  let memoryCache: Memory[] = [];
+
+  function t(key: string, values: Record<string, string | number> = {}) {
+    let text = translations[currentLanguage][key] || key;
+    for (const [name, value] of Object.entries(values)) {
+      text = text.replaceAll(`{${name}}`, String(value));
+    }
+    return text;
+  }
+
+  function applyLanguage() {
+    document.documentElement.lang = currentLanguage;
+    document.documentElement.dir = currentLanguage === "ar" ? "rtl" : "ltr";
+    document.title = isGiftPage
+      ? t("giftTitle") + (currentLanguage === "ar" ? " | هدية من القلب" : " | A gift from the heart")
+      : t("brand") + (currentLanguage === "ar" ? " | رسائل وصور لا تُنسى" : " | Stories and photos to remember");
+    const description = document.querySelector<HTMLMetaElement>('meta[name="description"]');
+    if (description) description.content = t("welcomeDescription");
+    document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((element) => {
+      const key = element.dataset.i18n;
+      if (key) element.textContent = t(key);
+    });
+    document.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("[data-i18n-placeholder]").forEach((element) => {
+      const key = element.dataset.i18nPlaceholder;
+      if (key) element.placeholder = t(key);
+    });
+    document.querySelectorAll<HTMLElement>("[data-i18n-aria-label]").forEach((element) => {
+      const key = element.dataset.i18nAriaLabel;
+      if (key) element.setAttribute("aria-label", t(key));
+    });
+    const languageButton = document.querySelector<HTMLButtonElement>("#language-toggle");
+    if (languageButton) {
+      languageButton.textContent = currentLanguage === "ar" ? "English" : "العربية";
+      languageButton.setAttribute("aria-label", t("languageSwitch"));
+      languageButton.lang = currentLanguage === "ar" ? "en" : "ar";
+    }
+    const footerLove = document.querySelector<HTMLElement>("#footer-love");
+    if (footerLove) footerLove.textContent = t("footerLove");
+    const privacyLabel = document.querySelector<HTMLElement>("#privacy-label");
+    if (privacyLabel) privacyLabel.textContent = t(isGiftPage ? "giftPrivacyLabel" : "privacyLabel");
+    if (isGiftPage) {
+      const storageFooter = document.querySelector<HTMLElement>("#storage-footer");
+      if (storageFooter) storageFooter.textContent = t("giftFooter");
+    }
+    if (currentBookStatus) {
+      updateStorageCopy(currentBookStatus.public_deployment);
+      const localWarning = document.querySelector<HTMLElement>("#gift-local-warning");
+      const giftLink = document.querySelector<HTMLElement>("#gift-share-link");
+      if (localWarning) localWarning.hidden = currentBookStatus.public_deployment;
+      if (giftLink) giftLink.hidden = !currentBookStatus.public_deployment || !giftEnabled;
+      if (!currentBookStatus.authenticated && !isGiftPage) {
+        setSetupMode(!currentBookStatus.configured, currentBookStatus.password_min_length);
+      }
+    }
+    const giftPassword = document.querySelector<HTMLInputElement>("#gift-password");
+    if (giftPassword && currentBookStatus) giftPassword.minLength = currentBookStatus.password_min_length;
+    if (isGiftPage && giftAuthenticated) renderMemories(memoryCache, true);
+    else if (!isGiftPage && currentBookStatus?.authenticated) renderMemories(memoryCache, false);
+    const giftUrl = document.querySelector<HTMLInputElement>("#gift-url");
+    if (giftUrl) giftUrl.value = `${window.location.origin}/?gift=1`;
+  }
+
+  function translateServerError(message: string) {
+    if (currentLanguage === "ar") return message;
+    const messages: Record<string, string> = {
+      "كلمة السر غير صحيحة.": "The password is incorrect.",
+      "كلمة السر الحالية غير صحيحة.": "The current password is incorrect.",
+      "كلمتا السر غير متطابقتين.": t("passwordMismatch"),
+      "كلمتا السر الجديدتان غير متطابقتين.": t("newPasswordMismatch"),
+      "كلمتا سر الهدية غير متطابقتين.": t("giftPasswordMismatch"),
+      "يجب أن تختلف كلمة سر الهدية عن كلمة سر الدفتر.": "The gift password must be different from the book password.",
+      "حدّثي الصفحة ثم حاولي مرة أخرى.": "Refresh the page and try again.",
+      "تم إعداد كلمة السر بالفعل.": "The book password has already been set.",
+      "ابدئي بإعداد كلمة سر الدفتر.": "Set up the book password first.",
+      "محاولات كثيرة. انتظري قليلاً ثم حاولي مجدداً.": "Too many attempts. Wait a little, then try again.",
+      "محاولات كثيرة. انتظري 15 دقيقة ثم حاولي مجدداً.": "Too many attempts. Wait 15 minutes, then try again.",
+      "افتحي الدفتر بكلمة السر أولاً.": "Unlock the book with its password first.",
+      "افتحي الهدية بكلمة السر أولاً.": "Open the gift with its password first.",
+      "انتهت صلاحية الجلسة. حدّثي الصفحة وحاولي مرة أخرى.": "Your session expired. Refresh the page and try again.",
+      "حجم الطلب أكبر من الحد المسموح به.": "The upload is larger than the allowed limit.",
+      "تعذّر الاتصال بخدمة دفتر الذكريات.": "Could not connect to the memory book service.",
+      "يجب ألا يتجاوز حجم الصورة الواحدة 10 ميجابايت.": "Each photo must be 10 MB or smaller.",
+      "تعذّر قراءة إحدى الصور.": "One of the photos could not be read.",
+      "أحد الملفات ليس صورة صالحة.": "One of the files is not a valid image.",
+      "الصور المدعومة: JPG وPNG وWEBP وGIF.": "Supported formats: JPG, PNG, WEBP, and GIF.",
+      "دقة الصورة كبيرة جداً.": "The photo dimensions are too large.",
+      "اكتبي عنواناً للذكرى لا يتجاوز 160 حرفاً.": "Enter a memory title of no more than 160 characters.",
+      "اكتبي حكاية صغيرة عن الذكرى.": "Write a short story for this memory.",
+      "اختاري تاريخاً صحيحاً للذكرى.": "Choose a valid date for this memory.",
+      "يمكنك إضافة 8 صور كحد أقصى للذكرى الواحدة.": "You can add up to 8 photos to each memory.",
+      "لم نعثر على هذه الذكرى.": "This memory could not be found.",
+      "لم تُجهّز هذه الهدية للمشاركة بعد.": t("giftNotReady"),
+      "أرسل الرابط وكلمة السر للمستلم.": "Send the link and password to the recipient.",
+      "تعذّر حفظ الذكرى. تأكدي من وجود مساحة كافية ثم حاولي مرة أخرى.": "Could not save the memory. Check available storage and try again.",
+      "حُذفت الذكرى، لكن تعذّر حذف إحدى صورها من مساحة التخزين.": "The memory was deleted, but one photo could not be removed from storage.",
+    };
+    const minimum = message.match(/^اختاري كلمة سر من (\d+) إلى 128 خانة\.$/);
+    if (minimum) return `Choose a password between ${minimum[1]} and 128 characters.`;
+    return messages[message] || message;
+  }
+
+  function showMessage(element: HTMLElement | null, message: string, isError = false) {
+    if (!element) return;
+    element.textContent = message;
+    element.classList.toggle("is-error", isError);
+  }
+
+  async function api<T>(path: string, options: ApiOptions = {}): Promise<T> {
+    const headers = new Headers(options.headers);
+    if (csrfToken.value) headers.set("X-CSRF-Token", csrfToken.value);
+    if (options.body && !(options.body instanceof FormData)) {
+      headers.set("Content-Type", "application/json");
+    }
+
+    let response: Response;
+    try {
+      response = await fetch(`/api/${path}`, {
+        ...options,
+        headers,
+        credentials: "same-origin",
+      });
+    } catch {
+      throw new Error(t("connectionError"));
+    }
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      const error = new Error(translateServerError(data.error || t("unexpectedError")));
+      Object.assign(error, { status: response.status });
+      throw error;
+    }
+    return data as T;
+  }
+
+  function setSetupMode(isSetup: boolean, passwordMinLength: number) {
+    const title = document.querySelector<HTMLElement>("#access-title");
+    const kicker = document.querySelector<HTMLElement>("#access-kicker");
+    const description = document.querySelector<HTMLElement>("#access-description");
+    const passwordLabel = document.querySelector<HTMLElement>("#password-label");
+    const passwordInput = document.querySelector<HTMLInputElement>("#password");
+    const confirmationField = document.querySelector<HTMLElement>("#confirmation-field");
+    const confirmationInput = document.querySelector<HTMLInputElement>("#confirmation");
+    const buttonLabel = document.querySelector<HTMLElement>("#access-button-label");
+
+    if (!title || !kicker || !description || !passwordLabel || !passwordInput ||
+      !confirmationField || !confirmationInput || !buttonLabel) return;
+
+    title.textContent = t(isSetup ? "setupTitle" : "loginTitle");
+    kicker.textContent = t(isSetup ? "setupKicker" : "loginKicker");
+    description.textContent = isSetup
+      ? t("setupDescription", { count: new Intl.NumberFormat(currentLanguage === "ar" ? "ar" : "en-US").format(passwordMinLength) })
+      : t("loginDescription");
+    passwordLabel.textContent = t(isSetup ? "setupPasswordLabel" : "loginPasswordLabel");
+    passwordInput.autocomplete = isSetup ? "new-password" : "current-password";
+    passwordInput.minLength = passwordMinLength;
+    confirmationField.hidden = !isSetup;
+    confirmationInput.required = isSetup;
+    confirmationInput.minLength = passwordMinLength;
+    buttonLabel.textContent = t(isSetup ? "setupButton" : "loginButton");
+    showMessage(accessMessage, "");
+  }
+
+  function updateStorageCopy(publicDeployment: boolean) {
+    const storageMessage = t(publicDeployment ? "storagePublic" : "storageLocal");
+    const privacyNote = document.querySelector<HTMLElement>("#privacy-note-text");
+    const storageFooter = document.querySelector<HTMLElement>("#storage-footer");
+    if (privacyNote) privacyNote.textContent = storageMessage;
+    if (storageFooter) storageFooter.textContent = storageMessage;
+  }
+
+  async function refreshBook() {
+    if (isGiftPage) {
+      await refreshGift();
+      return;
+    }
+    const status = await api<BookStatus>("auth/status");
+    currentBookStatus = status;
+    csrfToken.value = status.csrf_token;
+    const newPasswordInput = document.querySelector<HTMLInputElement>("#new-password");
+    const newPasswordConfirmation = document.querySelector<HTMLInputElement>("#new-password-confirmation");
+    updateStorageCopy(status.public_deployment);
+    if (newPasswordInput) newPasswordInput.minLength = status.password_min_length;
+    if (newPasswordConfirmation) newPasswordConfirmation.minLength = status.password_min_length;
+    const giftPassword = document.querySelector<HTMLInputElement>("#gift-share-password");
+    const giftConfirmation = document.querySelector<HTMLInputElement>("#gift-share-confirmation");
+    if (giftPassword) giftPassword.minLength = status.password_min_length;
+    if (giftConfirmation) giftConfirmation.minLength = status.password_min_length;
+
+    if (!accessScreen || !memoryBook) return;
+    accessScreen.hidden = status.authenticated;
+    memoryBook.hidden = !status.authenticated;
+    if (status.authenticated) {
+      try {
+        await loadMemories();
+        const giftSettings = await api<{ enabled: boolean }>("gift/settings");
+        giftEnabled = giftSettings.enabled;
+        const giftLink = document.querySelector<HTMLElement>("#gift-share-link");
+        const giftUrl = document.querySelector<HTMLInputElement>("#gift-url");
+        if (giftLink) giftLink.hidden = !status.public_deployment || !giftEnabled;
+        if (giftUrl && status.public_deployment) giftUrl.value = `${window.location.origin}/?gift=1`;
+        const localWarning = document.querySelector<HTMLElement>("#gift-local-warning");
+        if (localWarning) localWarning.hidden = status.public_deployment;
+      } catch (error) {
+        showMessage(memoryMessage, error instanceof Error ? error.message : t("memoriesLoadError"), true);
+      }
+    } else {
+      setSetupMode(!status.configured, status.password_min_length);
+    }
+  }
+
+  async function refreshGift() {
+    const status = await api<{
+      enabled: boolean;
+      authenticated: boolean;
+      csrf_token: string;
+      password_min_length: number;
+    }>("gift/status");
+    csrfToken.value = status.csrf_token;
+    giftEnabled = status.enabled;
+    giftAuthenticated = status.authenticated;
+    const giftAccess = document.querySelector<HTMLElement>("#gift-access");
+    const giftForm = document.querySelector<HTMLElement>("#gift-password-form");
+    const notReady = document.querySelector<HTMLElement>("#gift-not-ready");
+    const giftContent = document.querySelector<HTMLElement>("#gift-content");
+    const giftPassword = document.querySelector<HTMLInputElement>("#gift-password");
+    if (giftAccess) giftAccess.hidden = status.authenticated;
+    if (giftForm) giftForm.hidden = !status.enabled;
+    if (notReady) notReady.hidden = status.enabled;
+    if (giftContent) giftContent.hidden = !status.authenticated;
+    if (giftPassword) giftPassword.minLength = status.password_min_length;
+    if (status.authenticated) {
+      await loadMemories(true);
+    } else {
+      showMessage(giftMessage, status.enabled ? "" : t("giftNotReady"));
+    }
+  }
+
+  async function loadMemories(isGift = false) {
+    memoryCache = await api<Memory[]>(isGift ? "gift/memories" : "memories");
+    renderMemories(memoryCache, isGift);
+  }
+
+  function renderMemories(memories: Memory[], isGift: boolean) {
+    const gridSelector = isGift ? "#gift-memories-grid" : "#memories-grid";
+    const emptySelector = isGift ? "#gift-empty-state" : "#empty-state";
+    const countSelector = isGift ? "#gift-memory-count" : "#memory-count";
+    const grid = document.querySelector<HTMLElement>(gridSelector);
+    const emptyState = document.querySelector<HTMLElement>(emptySelector);
+    const count = document.querySelector<HTMLElement>(countSelector);
+    const template = document.querySelector<HTMLTemplateElement>("#memory-template");
+    if (!grid || !emptyState || !count || !template) return;
+
+    grid.replaceChildren();
+    emptyState.hidden = memories.length > 0;
+    const memoryCountKey = memories.length === 1
+      ? "memoryCountOne"
+      : memories.length === 2 ? "memoryCountTwo" : "memoryCount";
+    count.textContent = t(memoryCountKey, {
+      count: new Intl.NumberFormat(currentLanguage === "ar" ? "ar" : "en-US").format(memories.length),
+    });
+
+    for (const memory of memories) {
+      const card = template.content.firstElementChild?.cloneNode(true) as HTMLElement | null;
+      if (!card) continue;
+      const title = card.querySelector<HTMLElement>(".memory-title");
+      const story = card.querySelector<HTMLElement>(".memory-story");
+      const dateElement = card.querySelector<HTMLTimeElement>(".memory-date");
+      const photoArea = card.querySelector<HTMLElement>(".memory-photos");
+      const photoCount = card.querySelector<HTMLElement>(".photo-count");
+      const deleteButton = card.querySelector<HTMLButtonElement>(".delete-memory");
+      if (!title || !story || !dateElement || !photoArea || !photoCount || !deleteButton) continue;
+
+      title.textContent = memory.title;
+      story.textContent = memory.story;
+      deleteButton.textContent = t("delete");
+      deleteButton.setAttribute("aria-label", t("deleteMemory"));
+      if (memory.happened_on) {
+        dateElement.dateTime = memory.happened_on;
+        dateElement.textContent = new Intl.DateTimeFormat(currentLanguage === "ar" ? "ar" : "en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        }).format(new Date(`${memory.happened_on}T12:00:00`));
+      } else {
+        dateElement.textContent = t("memoryWithoutDate");
+      }
+
+      if (memory.photos.length) {
+        photoArea.classList.toggle("multiple-photos", memory.photos.length > 1);
+        for (const photo of memory.photos) {
+          const image = document.createElement("img");
+          image.src = photo.url;
+          image.alt = t("imageAlt", { title: memory.title });
+          image.loading = "lazy";
+          photoArea.append(image);
+        }
+        const photoCountKey = memory.photos.length === 1
+          ? "photoCountOne"
+          : memory.photos.length === 2 ? "photoCountTwo" : "photoCount";
+        photoCount.textContent = t(photoCountKey, {
+          count: new Intl.NumberFormat(currentLanguage === "ar" ? "ar" : "en-US").format(memory.photos.length),
+        });
+      } else {
+        photoArea.hidden = true;
+        photoCount.textContent = t("writtenMemory");
+      }
+
+      deleteButton.hidden = isGift;
+      if (!isGift) deleteButton.addEventListener("click", async () => {
+        if (!window.confirm(t("deleteConfirmation"))) return;
+        deleteButton.disabled = true;
+        try {
+          await api(`memories/${memory.id}`, { method: "DELETE" });
+          await loadMemories();
+        } catch (error) {
+          showMessage(memoryMessage, error instanceof Error ? error.message : t("deleteError"), true);
+          deleteButton.disabled = false;
+        }
+      });
+      grid.append(card);
+    }
+  }
+
+  document.querySelector<HTMLButtonElement>("#language-toggle")?.addEventListener("click", () => {
+    currentLanguage = currentLanguage === "ar" ? "en" : "ar";
+    localStorage.setItem("memory-book-language", currentLanguage);
+    applyLanguage();
+  });
+
+  giftPasswordForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const password = String(new FormData(giftPasswordForm).get("password") || "");
+    const button = giftPasswordForm.querySelector<HTMLButtonElement>("button[type=submit]");
+    if (button) button.disabled = true;
+    showMessage(giftMessage, t("openingPages"));
+    try {
+      await api("gift/login", { method: "POST", body: JSON.stringify({ password }) });
+      giftPasswordForm.reset();
+      await refreshGift();
+    } catch (error) {
+      showMessage(giftMessage, error instanceof Error ? error.message : t("giftError"), true);
+    } finally {
+      if (button) button.disabled = false;
+    }
+  });
+
+  accessForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!accessButton) return;
+    const formData = new FormData(accessForm);
+    const password = String(formData.get("password") || "");
+    const confirmation = String(formData.get("confirmation") || "");
+    const isSetup = !document.querySelector<HTMLElement>("#confirmation-field")?.hidden;
+    if (isSetup && password !== confirmation) {
+      showMessage(accessMessage, t("setupMismatch"), true);
+      return;
+    }
+    accessButton.disabled = true;
+    showMessage(accessMessage, isSetup ? t("savingPassword") : t("openingPages"));
+    try {
+      await api(isSetup ? "auth/setup" : "auth/login", {
+        method: "POST",
+        body: JSON.stringify({ password, confirmation }),
+      });
+      accessForm.reset();
+      await refreshBook();
+    } catch (error) {
+      showMessage(accessMessage, error instanceof Error ? error.message : t("openError"), true);
+    } finally {
+      accessButton.disabled = false;
+    }
+  });
+
+  memoryForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const saveButton = document.querySelector<HTMLButtonElement>("#save-button");
+    if (saveButton) saveButton.disabled = true;
+    showMessage(memoryMessage, t("arrangingMemory"));
+    try {
+      const formData = new FormData(memoryForm);
+      await api("memories", { method: "POST", body: formData });
+      memoryForm.reset();
+      updatePhotoPreview();
+      showMessage(memoryMessage, t("memorySaved"));
+      await loadMemories();
+    } catch (error) {
+      showMessage(memoryMessage, error instanceof Error ? error.message : t("saveError"), true);
+    } finally {
+      if (saveButton) saveButton.disabled = false;
+    }
+  });
+
+  function updatePhotoPreview() {
+    const preview = document.querySelector<HTMLElement>("#photo-preview");
+    const input = document.querySelector<HTMLInputElement>("#memory-photos");
+    if (!preview || !input) return;
+    preview.replaceChildren();
+    const files = Array.from(input.files || []);
+    files.slice(0, 8).forEach((file) => {
+      if (!file.type.startsWith("image/")) return;
+      const image = document.createElement("img");
+      image.alt = file.name;
+      image.src = URL.createObjectURL(file);
+      image.onload = () => URL.revokeObjectURL(image.src);
+      preview.append(image);
+    });
+    if (files.length > 8) {
+      showMessage(memoryMessage, t("maxPhotos"), true);
+    }
+  }
+
+  document.querySelector<HTMLInputElement>("#memory-photos")?.addEventListener("change", updatePhotoPreview);
+
+  document.querySelector<HTMLButtonElement>("#logout-button")?.addEventListener("click", async () => {
+    try {
+      await api("auth/logout", { method: "POST" });
+      await refreshBook();
+    } catch (error) {
+      showMessage(memoryMessage, error instanceof Error ? error.message : t("closeError"), true);
+    }
+  });
+
+  document.querySelector<HTMLFormElement>("#change-password-form")?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const form = event.currentTarget as HTMLFormElement;
+    const message = document.querySelector<HTMLElement>("#password-message");
+    const fields = new FormData(form);
+    const password = String(fields.get("password") || "");
+    if (password !== String(fields.get("confirmation") || "")) {
+      showMessage(message, t("newPasswordMismatch"), true);
+      return;
+    }
+    try {
+      await api("auth/password", {
+        method: "POST",
+        body: JSON.stringify({
+          current: fields.get("current"),
+          password,
+          confirmation: fields.get("confirmation"),
+        }),
+      });
+      form.reset();
+      showMessage(message, t("passwordChanged"));
+    } catch (error) {
+      showMessage(message, error instanceof Error ? error.message : t("passwordChangeError"), true);
+    }
+  });
+
+  giftSettingsForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const form = event.currentTarget as HTMLFormElement;
+    const fields = new FormData(form);
+    const password = String(fields.get("password") || "");
+    const confirmation = String(fields.get("confirmation") || "");
+    const message = document.querySelector<HTMLElement>("#gift-settings-message");
+    if (password !== confirmation) {
+      showMessage(message, t("giftPasswordMismatch"), true);
+      return;
+    }
+    const button = form.querySelector<HTMLButtonElement>("button[type=submit]");
+    if (button) button.disabled = true;
+    try {
+      await api("gift/settings", {
+        method: "POST",
+        body: JSON.stringify({ password, confirmation }),
+      });
+      form.reset();
+      showMessage(
+        message,
+        currentBookStatus?.public_deployment ? t("giftLinkCreated") : t("giftSavedLocally"),
+        !currentBookStatus?.public_deployment,
+      );
+      const link = document.querySelector<HTMLElement>("#gift-share-link");
+      const url = document.querySelector<HTMLInputElement>("#gift-url");
+      const localWarning = document.querySelector<HTMLElement>("#gift-local-warning");
+      if (currentBookStatus?.public_deployment) {
+        if (url) url.value = `${window.location.origin}/?gift=1`;
+        if (link) link.hidden = false;
+        if (localWarning) localWarning.hidden = true;
+      } else {
+        if (link) link.hidden = true;
+        if (localWarning) localWarning.hidden = false;
+      }
+    } catch (error) {
+      showMessage(message, error instanceof Error ? error.message : t("giftError"), true);
+    } finally {
+      if (button) button.disabled = false;
+    }
+  });
+
+  document.querySelector<HTMLButtonElement>("#copy-gift-link")?.addEventListener("click", async () => {
+    const url = document.querySelector<HTMLInputElement>("#gift-url");
+    const message = document.querySelector<HTMLElement>("#gift-settings-message");
+    if (!url) return;
+    try {
+      await navigator.clipboard.writeText(url.value);
+      showMessage(message, t("giftLinkCopied"));
+    } catch {
+      url.focus();
+      url.select();
+      showMessage(message, t("giftLinkCopyError"), true);
+    }
+  });
+
+  if (isGiftPage) {
+    if (accessScreen) accessScreen.hidden = true;
+    if (memoryBook) memoryBook.hidden = true;
+    if (giftView) giftView.hidden = false;
+  }
+  applyLanguage();
+  refreshBook().catch((error) => {
+    showMessage(isGiftPage ? giftMessage : accessMessage, error instanceof Error ? error.message : t("loadError"), true);
+  });
+</script>
+
+<style>
+  .access-screen {
+    padding-block: 48px 104px;
+  }
+
+  .welcome-copy {
+    max-width: 760px;
+    margin: 0 auto 54px;
+    text-align: center;
+  }
+
+  .eyebrow,
+  .access-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--sage-dark);
+    font-size: 0.875rem;
+    letter-spacing: 0.035em;
+  }
+
+  .eyebrow {
+    margin-bottom: 16px;
+  }
+
+  .eyebrow span {
+    color: var(--rose);
+    font-size: 1.125rem;
+  }
+
+  .welcome-copy h1 {
+    margin-bottom: 14px;
+    font-size: 2.75rem;
+  }
+
+  .welcome-copy p {
+    max-width: 590px;
+    margin: 0 auto;
+    color: var(--ink-soft);
+    font-size: 1.0625rem;
+  }
+
+  .gift-view {
+    min-height: 68vh;
+    padding-block: 56px 88px;
+  }
+
+  .gift-welcome {
+    max-width: 700px;
+    margin: 0 auto 34px;
+    text-align: center;
+  }
+
+  .gift-welcome h1 {
+    margin-bottom: 12px;
+    font-size: 2.5rem;
+  }
+
+  .gift-welcome p {
+    color: var(--ink-soft);
+  }
+
+  .gift-access {
+    width: min(460px, 100%);
+    margin-inline: auto;
+    padding: clamp(24px, 4vw, 38px);
+  }
+
+  .gift-access h2 {
+    margin-bottom: 8px;
+    font-size: 1.75rem;
+  }
+
+  .gift-access > p:not(.form-message) {
+    color: var(--ink-soft);
+  }
+
+  .gift-content {
+    max-width: 920px;
+    margin-inline: auto;
+  }
+
+  .gift-content .memories-heading {
+    margin-top: 40px;
+  }
+
+  .gift-content .memories-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .gift-settings {
+    max-width: 620px;
+    margin-top: 28px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    color: var(--ink-soft);
+  }
+
+  .gift-settings summary {
+    width: fit-content;
+    cursor: pointer;
+    font-size: 0.875rem;
+  }
+
+  .gift-settings > p {
+    max-width: 65ch;
+    margin: 12px 0;
+    font-size: 0.875rem;
+  }
+
+  .gift-local-warning {
+    max-width: 65ch;
+    padding: 11px 13px;
+    border: 1px solid var(--line);
+    background: rgb(235 226 209 / 52%);
+    color: var(--ink-soft);
+    font-size: 0.8125rem;
+  }
+
+  .gift-share-link {
+    display: grid;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .gift-share-link label {
+    color: var(--ink);
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .gift-share-link input {
+    width: 100%;
+    min-height: 44px;
+    padding: 8px 11px;
+    border: 1px solid var(--line);
+    background: rgb(255 255 255 / 62%);
+    color: var(--ink);
+  }
+
+  .gift-share-link p {
+    margin: 0;
+    color: var(--ink-faint);
+    font-size: 0.8125rem;
+  }
+
+  .gate-grid {
+    display: grid;
+    width: min(940px, 100%);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(30px, 7vw, 94px);
+    margin-inline: auto;
+  }
+
+  .envelope-scene {
+    position: relative;
+    display: grid;
+    min-height: 340px;
+    align-content: center;
+    justify-items: center;
+  }
+
+  .envelope {
+    position: relative;
+    width: min(100%, 370px);
+    height: 224px;
+    transform: rotate(-2deg);
+  }
+
+  .envelope-shadow {
+    position: absolute;
+    width: min(85%, 305px);
+    height: 30px;
+    border-radius: 50%;
+    background: rgb(75 58 43 / 16%);
+    filter: blur(13px);
+    transform: translateY(253px);
+  }
+
+  .envelope-front,
+  .envelope-flap,
+  .envelope-letter {
+    position: absolute;
+    inset-inline: 0;
+    margin-inline: auto;
+  }
+
+  .envelope-front {
+    z-index: 3;
+    bottom: 0;
+    height: 178px;
+    border: 1px solid #d5bea1;
+    background:
+      linear-gradient(145deg, transparent 49.7%, #dfc7a8 50%, transparent 50.6%),
+      linear-gradient(215deg, transparent 49.7%, #dfc7a8 50%, transparent 50.6%),
+      linear-gradient(30deg, #ebd6b8, #f8e9d1 58%, #e8d1b1);
+    box-shadow: 0 18px 26px rgb(75 58 43 / 13%);
+    clip-path: polygon(0 0, 50% 56%, 100% 0, 100% 100%, 0 100%);
+  }
+
+  .envelope-flap {
+    z-index: 2;
+    top: 20px;
+    width: 0;
+    height: 0;
+    border-top: 114px solid #f3e2c7;
+    border-inline: 185px solid transparent;
+    filter: drop-shadow(0 2px 2px rgb(100 76 48 / 12%));
+  }
+
+  .envelope-letter {
+    top: 17px;
+    display: flex;
+    width: 76%;
+    height: 184px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e3d6c3;
+    background:
+      repeating-linear-gradient(0deg, transparent 0 27px, rgb(148 132 108 / 10%) 27px 28px),
+      var(--paper-light);
+    color: var(--ink-soft);
+    font-family: var(--font-hand);
+    font-size: 1.0625rem;
+    transform: translateY(8px);
+  }
+
+  .letter-mark {
+    margin-top: 12px;
+    color: var(--rose);
+    font-size: 1.5rem;
+  }
+
+  .envelope-seal {
+    position: absolute;
+    z-index: 4;
+    top: 112px;
+    left: 50%;
+    display: grid;
+    width: 52px;
+    height: 52px;
+    place-items: center;
+    border: 1px solid rgb(255 255 255 / 54%);
+    border-radius: 50%;
+    background: var(--rose);
+    box-shadow: 0 4px 11px rgb(100 57 53 / 17%);
+    color: #fff6ec;
+    font-size: 1.6rem;
+    transform: translateX(-50%);
+  }
+
+  .pressed-flower {
+    position: absolute;
+    z-index: 5;
+    color: var(--sage);
+    opacity: 0.72;
+    text-shadow: 0 1px 0 rgb(255 255 255 / 48%);
+  }
+
+  .flower-one {
+    top: 14px;
+    right: 7%;
+    font-size: 2.2rem;
+    transform: rotate(-18deg);
+  }
+
+  .flower-two {
+    bottom: 74px;
+    left: 3%;
+    color: var(--rose);
+    font-size: 1.7rem;
+    transform: rotate(12deg);
+  }
+
+  .envelope-caption {
+    position: absolute;
+    bottom: 5px;
+    margin: 0;
+    color: var(--sage-dark);
+    font-family: var(--font-hand);
+    font-size: 1rem;
+    transform: rotate(-2deg);
+  }
+
+  .access-paper,
+  .composer-paper {
+    position: relative;
+    border: 1px solid var(--line);
+    background:
+      repeating-linear-gradient(0deg, transparent 0 31px, rgb(148 132 108 / 6%) 31px 32px),
+      rgb(255 250 240 / 83%);
+    box-shadow: 0 14px 28px rgb(75 58 43 / 7%), 0 2px 5px rgb(75 58 43 / 4%);
+  }
+
+  .access-paper {
+    padding: clamp(26px, 4vw, 42px);
+  }
+
+  .paper-corner,
+  .section-mark {
+    position: absolute;
+    top: 15px;
+    left: 17px;
+    color: var(--honey);
+    font-size: 1.25rem;
+  }
+
+  .access-kicker {
+    margin-bottom: 8px;
+    font-size: 0.8125rem;
+  }
+
+  .access-paper h2,
+  .composer-paper h2 {
+    margin-bottom: 8px;
+    font-size: 1.75rem;
+  }
+
+  .access-description,
+  .composer-intro {
+    margin-bottom: 24px;
+    color: var(--ink-soft);
+    font-size: 0.9375rem;
+  }
+
+  .password-form,
+  .memory-form,
+  .change-password-form {
+    display: grid;
+    gap: 10px;
+  }
+
+  .password-form label,
+  .memory-form > label:not(.photo-picker),
+  .change-password-form label {
+    color: var(--ink);
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .password-form input,
+  .memory-form input:not([type="file"]),
+  .memory-form textarea,
+  .change-password-form input {
+    width: 100%;
+    min-height: 48px;
+    padding: 10px 13px;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    background: rgb(255 255 255 / 62%);
+    color: var(--ink);
+    transition: border-color 180ms ease, box-shadow 180ms ease;
+  }
+
+  .password-form input:focus,
+  .memory-form input:focus,
+  .memory-form textarea:focus,
+  .change-password-form input:focus {
+    border-color: var(--sage);
+    box-shadow: 0 0 0 3px rgb(113 130 109 / 12%);
+    outline: none;
+  }
+
+  .memory-form textarea {
+    min-height: 122px;
+    resize: vertical;
+  }
+
+  .primary-button,
+  .secondary-button {
+    display: inline-flex;
+    min-height: 48px;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 10px 18px;
+    border: 1px solid var(--rose-dark);
+    border-radius: 2px;
+    background: var(--rose-dark);
+    color: #fffaf0;
+    cursor: pointer;
+    font-size: 0.9375rem;
+    transition: background 180ms ease, transform 180ms ease, opacity 180ms ease;
+  }
+
+  .primary-button:hover:not(:disabled),
+  .secondary-button:hover:not(:disabled) {
+    background: #763d3b;
+    transform: translateY(-1px);
+  }
+
+  .primary-button:disabled,
+  .secondary-button:disabled {
+    cursor: wait;
+    opacity: 0.68;
+  }
+
+  .password-form .primary-button {
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+
+  .form-message {
+    min-height: 1.5em;
+    margin: 0;
+    color: var(--sage-dark);
+    font-size: 0.8125rem;
+  }
+
+  .form-message.is-error {
+    color: var(--rose-dark);
+  }
+
+  .privacy-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    margin: 14px 0 0;
+    color: var(--ink-faint);
+    font-size: 0.75rem;
+  }
+
+  .privacy-note span {
+    color: var(--sage-dark);
+  }
+
+  .memory-book {
+    padding-block: 36px 88px;
+  }
+
+  .book-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 34px;
+  }
+
+  .book-heading h1 {
+    margin-bottom: 8px;
+    font-size: 2.625rem;
+  }
+
+  .book-heading p {
+    margin-bottom: 0;
+    color: var(--ink-soft);
+  }
+
+  .quiet-button,
+  .secondary-button {
+    min-height: 42px;
+    padding: 8px 13px;
+    border: 1px solid var(--line);
+    background: rgb(255 250 240 / 64%);
+    color: var(--ink-soft);
+    cursor: pointer;
+    font-size: 0.8125rem;
+    transition: border-color 180ms ease, color 180ms ease;
+  }
+
+  .quiet-button:hover {
+    border-color: var(--rose);
+    color: var(--rose-dark);
+  }
+
+  .book-layout {
+    display: grid;
+    grid-template-columns: minmax(270px, 340px) minmax(0, 1fr);
+    align-items: start;
+    gap: clamp(28px, 5vw, 60px);
+  }
+
+  .composer-paper {
+    padding: 28px 25px 22px;
+  }
+
+  .composer-paper h2 {
+    margin-bottom: 4px;
+  }
+
+  .composer-intro {
+    margin-bottom: 20px;
+  }
+
+  .optional-label {
+    color: var(--ink-faint);
+    font-size: 0.75rem;
+    font-weight: 400;
+  }
+
+  .photo-picker {
+    display: flex;
+    min-height: 72px;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border: 1px dashed #c5b59d;
+    background: rgb(255 250 240 / 54%);
+    cursor: pointer;
+    transition: border-color 180ms ease, background 180ms ease;
+  }
+
+  .photo-picker:hover,
+  .photo-picker:focus-within {
+    border-color: var(--sage);
+    background: rgb(113 130 109 / 7%);
+  }
+
+  .photo-picker input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .photo-icon {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    flex: 0 0 auto;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    color: var(--sage-dark);
+    font-size: 1.2rem;
+  }
+
+  .photo-picker-copy {
+    display: grid;
+    gap: 2px;
+  }
+
+  .photo-picker-copy strong {
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .photo-picker-copy small {
+    color: var(--ink-faint);
+    font-size: 0.6875rem;
+  }
+
+  .photo-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .photo-preview:empty {
+    display: none;
+  }
+
+  .photo-preview img {
+    width: 58px;
+    height: 58px;
+    border: 3px solid var(--photo-paper);
+    box-shadow: 0 1px 4px rgb(75 58 43 / 14%);
+    object-fit: cover;
+  }
+
+  .save-button {
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 5px;
+  }
+
+  .memories-section {
+    min-width: 0;
+  }
+
+  .memories-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 7px 0 22px;
+    padding-bottom: 13px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .memories-heading .access-kicker {
+    margin-bottom: 2px;
+  }
+
+  .memories-heading h2 {
+    margin: 0;
+    font-size: 2rem;
+  }
+
+  .memory-count {
+    padding: 4px 10px;
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+
+  .memories-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 22px;
+  }
+
+  .memory-card {
+    min-width: 0;
+    padding: 11px 11px 16px;
+    border: 1px solid #e8dfd1;
+    background: var(--photo-paper);
+    box-shadow: 0 7px 15px rgb(75 58 43 / 10%), 0 18px 28px rgb(75 58 43 / 6%);
+    transform: rotate(-0.7deg);
+    transition: box-shadow 220ms ease, transform 220ms ease;
+  }
+
+  .memory-card:nth-child(even) {
+    transform: rotate(0.8deg) translateY(12px);
+  }
+
+  .memory-card:hover {
+    box-shadow: 0 12px 20px rgb(75 58 43 / 13%), 0 24px 34px rgb(75 58 43 / 8%);
+    transform: rotate(0) translateY(-3px);
+  }
+
+  .memory-photos {
+    display: grid;
+    min-height: 150px;
+    max-height: 360px;
+    grid-template-columns: minmax(0, 1fr);
+    overflow: hidden;
+    background: var(--paper-deep);
+  }
+
+  .memory-photos.multiple-photos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .memory-photos img {
+    width: 100%;
+    height: 100%;
+    min-height: 150px;
+    max-height: 230px;
+    object-fit: cover;
+  }
+
+  .memory-photos.multiple-photos img {
+    min-height: 115px;
+    max-height: 170px;
+  }
+
+  .memory-copy {
+    padding: 13px 5px 0;
+  }
+
+  .memory-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    color: var(--ink-faint);
+    font-size: 0.6875rem;
+  }
+
+  .delete-memory {
+    padding: 3px 5px;
+    border: 0;
+    background: transparent;
+    color: var(--ink-faint);
+    cursor: pointer;
+    font: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .delete-memory:hover {
+    color: var(--rose-dark);
+  }
+
+  .delete-memory:disabled {
+    cursor: wait;
+    opacity: 0.6;
+  }
+
+  .memory-title {
+    margin: 7px 0;
+    font-size: 1.375rem;
+    line-height: 1.35;
+  }
+
+  .memory-story {
+    margin-bottom: 8px;
+    color: var(--ink-soft);
+    font-size: 0.875rem;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+  }
+
+  .photo-count {
+    color: var(--sage-dark);
+    font-size: 0.75rem;
+  }
+
+  .empty-state {
+    padding: 58px 25px;
+    border: 1px dashed #cbbca5;
+    background: rgb(255 250 240 / 48%);
+    text-align: center;
+  }
+
+  .empty-state > span {
+    display: inline-block;
+    margin-bottom: 12px;
+    color: var(--rose);
+    font-size: 2rem;
+  }
+
+  .empty-state h3 {
+    margin-bottom: 9px;
+    font-size: 1.375rem;
+  }
+
+  .empty-state p {
+    max-width: 380px;
+    margin: 0 auto 15px;
+    color: var(--ink-soft);
+    font-size: 0.875rem;
+  }
+
+  .empty-state a {
+    color: var(--rose-dark);
+    font-size: 0.875rem;
+    text-decoration-color: var(--rose);
+    text-underline-offset: 4px;
+  }
+
+  .password-settings {
+    max-width: 440px;
+    margin-top: 48px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    color: var(--ink-soft);
+  }
+
+  .password-settings summary {
+    width: fit-content;
+    cursor: pointer;
+    font-size: 0.875rem;
+  }
+
+  .change-password-form {
+    margin-top: 16px;
+  }
+
+  .secondary-button {
+    width: fit-content;
+    margin-top: 5px;
+  }
+
+  @media (max-width: 820px) {
+    .book-layout {
+      grid-template-columns: minmax(250px, 310px) minmax(0, 1fr);
+      gap: 26px;
+    }
+
+    .memories-grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 18px;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .access-screen {
+      padding-top: 32px;
+      padding-bottom: 70px;
+    }
+
+    .welcome-copy {
+      margin-bottom: 30px;
+    }
+
+    .gate-grid {
+      max-width: 500px;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 24px;
+    }
+
+    .envelope-scene {
+      min-height: 266px;
+    }
+
+    .envelope {
+      width: min(86%, 340px);
+      transform: scale(0.88) rotate(-2deg);
+    }
+
+    .envelope-shadow {
+      transform: translateY(236px);
+    }
+
+    .envelope-caption {
+      bottom: 0;
+    }
+
+    .book-layout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .memories-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 520px) {
+    .page-shell {
+      width: min(100% - 32px, 460px);
+    }
+
+    .welcome-copy h1 {
+      font-size: 2.25rem;
+    }
+
+    .gift-view {
+      padding-top: 32px;
+    }
+
+    .gift-welcome h1 {
+      font-size: 2rem;
+    }
+
+    .welcome-copy p {
+      font-size: 0.9375rem;
+    }
+
+    .book-heading {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .book-heading h1 {
+      font-size: 2rem;
+    }
+
+    .quiet-button {
+      align-self: flex-start;
+    }
+
+    .memories-grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    .gift-content .memories-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .memory-card:nth-child(even) {
+      transform: rotate(0.5deg);
+    }
+  }
+</style>

@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-27T00:42:49.000Z",
+  "title": "Design System: دفتر الذكريات",
+  "extensions": {
+    "typographyMeta": {
+      "display": {
+        "displayName": "Serif display",
+        "purpose": "Arabic hero and section headings."
+      },
+      "body": {
+        "displayName": "System sans-serif",
+        "purpose": "Controls, labels, and reading copy."
+      },
+      "handwritten": {
+        "displayName": "Handwritten annotation",
+        "purpose": "Brief decorative notes only."
+      }
+    },
+    "shadows": [
+      {
+        "name": "envelope",
+        "value": "0 18px 26px rgb(75 58 43 / 13%)",
+        "purpose": "Grounds the flower-sealed paper envelope."
+      },
+      {
+        "name": "memory-card",
+        "value": "0 7px 15px rgb(75 58 43 / 10%), 0 18px 28px rgb(75 58 43 / 6%)",
+        "purpose": "Separates a photo keepsake from the paper canvas."
+      }
+    ],
+    "motion": [
+      {
+        "name": "paper-hover",
+        "value": "transform 220ms ease",
+        "purpose": "Adds a restrained lift to keepsake prints."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "transition-duration: 0.01ms; animation-duration: 0.01ms; animation-iteration-count: 1",
+        "purpose": "Honors the visitor's reduced-motion preference."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "access-stack",
+        "value": "720px",
+        "purpose": "Stacks the envelope/form and book columns."
+      },
+      {
+        "name": "book-mobile",
+        "value": "520px",
+        "purpose": "Uses a single-column memory archive."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Private access paper",
+      "kind": "form",
+      "refersTo": "access-paper",
+      "description": "First-run password setup and returning-user lock form.",
+      "html": "<section class=\"access-paper\"><h2>افتحي دفتر الذكريات</h2><form><label for=\"password\">كلمة السر</label><input id=\"password\" type=\"password\"><button type=\"submit\">فتح الدفتر</button></form></section>",
+      "css": ".access-paper { border: 1px solid var(--line); background: var(--paper-light); box-shadow: 0 14px 28px rgb(75 58 43 / 7%); }"
+    },
+    {
+      "name": "Flower-sealed envelope",
+      "kind": "custom",
+      "refersTo": "welcome-envelope",
+      "description": "A layered paper letter gives the private access form a keepsake frame.",
+      "html": "<div class=\"envelope-scene\" aria-hidden=\"true\"><div class=\"envelope\"><div class=\"envelope-letter\">إلى صاحبة هذه الذكريات</div><div class=\"envelope-flap\"></div><div class=\"envelope-front\"></div><div class=\"envelope-seal\">✿</div></div></div>",
+      "css": ".envelope { position: relative; width: min(100%, 370px); height: 224px; transform: rotate(-2deg); } .envelope-front { clip-path: polygon(0 0, 50% 56%, 100% 0, 100% 100%, 0 100%); } .envelope-seal { border-radius: 50%; background: var(--rose); }"
+    },
+    {
+      "name": "Memory composition paper",
+      "kind": "form",
+      "refersTo": "access-paper",
+      "description": "A calm writing surface for a title, story, date, and optional photos.",
+      "html": "<form class=\"memory-form\"><label for=\"memory-title\">عنوان الذكرى</label><input id=\"memory-title\"><label for=\"memory-story\">حكاية الذكرى</label><textarea id=\"memory-story\"></textarea><label for=\"memory-photos\">أرفقي صورًا</label><input id=\"memory-photos\" type=\"file\" multiple></form>",
+      "css": ".memory-form { display: grid; gap: 10px; } .memory-form input, .memory-form textarea { border: 1px solid var(--line); background: rgb(255 255 255 / 62%); }"
+    },
+    {
+      "name": "Photograph memory card",
+      "kind": "card",
+      "refersTo": "memory-card",
+      "description": "Real uploaded photographs and the owner's story presented like a scrapbook print.",
+      "html": "<article class=\"memory-card\"><div class=\"memory-photos\"><img src=\"/api/media/1\" alt=\"صورة من الذكرى\"></div><div class=\"memory-copy\"><time>التاريخ</time><h3>عنوان الذكرى</h3><p>حكاية الذكرى</p></div></article>",
+      "css": ".memory-card { padding: 11px 11px 16px; border: 1px solid var(--photo-line); background: var(--photo-paper); box-shadow: 0 7px 15px rgb(75 58 43 / 10%), 0 18px 28px rgb(75 58 43 / 6%); transform: rotate(-0.7deg); } .memory-photos img { width: 100%; aspect-ratio: 1.15; object-fit: cover; }"
+    },
+    {
+      "name": "First-memory empty state",
+      "kind": "empty-state",
+      "refersTo": "empty-state",
+      "description": "A quiet invitation appears only when the private archive has no entries.",
+      "html": "<div class=\"empty-state\"><span aria-hidden=\"true\">✿</span><h3>هذه الصفحة ما زالت تنتظر حكايتها الأولى</h3><a href=\"#composer-heading\">أضيفي أول ذكرى</a></div>",
+      "css": ".empty-state { padding: 58px 25px; border: 1px dashed var(--empty-line); background: rgb(255 250 240 / 48%); text-align: center; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "A Private Botanical Keepsake",
+    "overview": "An Arabic right-to-left memory book that feels like a letter folded into a favorite scrapbook. A flower-sealed envelope frames the first-run password setup and returning-user lock. After authentication, real photos sit beside the owner's actual stories on warm paper. Content remains local in an ignored SQLite database and image folder; the interface does not claim cloud backup or public-hosting security.",
+    "keyCharacteristics": [
+      "Warm textured paper with restrained botanical ink and pressed-flower accents.",
+      "A clear password gate framed by a tactile sealed envelope.",
+      "A nearby writing form and spacious scrapbook gallery.",
+      "Arabic copy, right-to-left flow, visible keyboard focus, and reduced motion."
+    ],
+    "rules": [
+      {
+        "name": "The Keepsake Rule",
+        "body": "Paper remains the main surface; rose, sage, and honey are small accents.",
+        "section": "colors"
+      },
+      {
+        "name": "The Private Content Rule",
+        "body": "Personal text and photo bytes stay behind the authenticated session.",
+        "section": "privacy"
+      },
+      {
+        "name": "The Real Memory Rule",
+        "body": "Never seed pretend personal content; the owner's actual photos and writing lead.",
+        "section": "content"
+      }
+    ],
+    "dos": [
+      "Do keep photo and memory responses behind authentication.",
+      "Do explain that the database and photos are stored locally.",
+      "Do keep Arabic, right-to-left layout and readable controls consistent.",
+      "Do confirm destructive actions and announce errors."
+    ],
+    "donts": [
+      "Don't claim cloud synchronization or public-internet security.",
+      "Don't serve uploaded photos from an unprotected static folder.",
+      "Don't let the envelope decoration replace a real password form.",
+      "Don't invent example memories that might be mistaken for personal content."
+    ]
+  }
+}

@@ -1,11 +1,117 @@
-<header class="bg-blue-700 text-white p-4 shadow-md">
-  <div class="container mx-auto flex justify-between items-center px-4">
-    <h1 class="text-xl font-bold"><a href="/" class="hover:underline">Tailspin Shelter</a></h1>
-    <nav>
-      <ul class="flex gap-4">
-        <li><a href="/" class="hover:underline">Home</a></li>
-        <li><a href="/about" class="hover:underline">About</a></li>
-      </ul>
-    </nav>
+<header class="site-header">
+  <div class="page-shell header-inner">
+    <a class="brand" href="/" aria-label="دفتر الذكريات" data-i18n-aria-label="brand">
+      <svg class="brand-flower" viewBox="0 0 42 42" aria-hidden="true">
+        <path d="M21 7c4-8 12-1 7 5 9-4 12 6 3 8 8 5 1 13-6 7 2 10-9 10-9 1-7 7-14-2-5-8-10 1-10-10 0-10-4-9 6-14 10-4 0-9 11-8 8 1 1z" fill="#bb7772" />
+        <circle cx="21" cy="21" r="4" fill="#c4a569" />
+      </svg>
+      <span class="brand-words" data-i18n="brand">دفتر الذكريات</span>
+    </a>
+    <div class="header-actions">
+      <button class="language-toggle" id="language-toggle" type="button" lang="en" aria-label="Switch language to English">English</button>
+      <span class="privacy-label"><span aria-hidden="true">✦</span> <span id="privacy-label" data-i18n="privacyLabel">مساحة خاصة</span></span>
+    </div>
   </div>
 </header>
+
+<style>
+  .site-header {
+    position: relative;
+    z-index: 2;
+    padding-block: 20px;
+  }
+
+  .header-inner {
+    display: flex;
+    min-height: 48px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .header-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .language-toggle {
+    min-height: 38px;
+    padding: 6px 12px;
+    border: 1px solid var(--line);
+    background: rgb(255 250 240 / 64%);
+    color: var(--sage-dark);
+    cursor: pointer;
+    font-size: 0.8125rem;
+    transition: border-color 180ms ease, color 180ms ease, background 180ms ease;
+  }
+
+  .language-toggle:hover {
+    border-color: var(--sage);
+    background: var(--paper-light);
+    color: var(--rose-dark);
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .brand-flower {
+    width: 36px;
+    flex: 0 0 auto;
+  }
+
+  .brand-words {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    letter-spacing: -0.035em;
+  }
+
+  .brand-words span {
+    color: var(--sage-dark);
+    font-style: italic;
+  }
+
+  .privacy-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ink-soft);
+    font-size: 0.84rem;
+  }
+
+  .privacy-label span {
+    color: var(--rose);
+  }
+
+  @media (max-width: 520px) {
+    .site-header {
+      padding-block: 15px;
+    }
+
+    .header-inner {
+      gap: 12px;
+    }
+
+    .header-actions {
+      gap: 10px;
+    }
+
+    .language-toggle {
+      min-height: 36px;
+      padding-inline: 9px;
+    }
+
+    .brand-flower {
+      width: 30px;
+    }
+
+    .brand-words {
+      font-size: 1.05rem;
+    }
+  }
+</style>

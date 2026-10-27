@@ -1,3 +1,5 @@
 flask
 sqlalchemy
 flask_sqlalchemy
+Pillow>=11,<13
+gunicorn>=23,<24
